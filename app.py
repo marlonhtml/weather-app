@@ -30,16 +30,25 @@ label1 = tkinter.Label(window, text="Enter a city name:",
                     fg = 'white',
                     font = ("Arial", 20, "bold"),
                     padx = 10,
-                    pady = 0,
+                    pady = 5,
                     # width = 20,
                     # height =
                        )
-label1.grid(row = 0, column = 4)
+label1.grid(row = 0, column = 0, pady = (20, 10))
 
 
 
-user_input = tkinter.Entry(window)
-user_input.grid(row = 1, column = 4, padx = 10, pady = 10)
+user_input = tkinter.Entry(window, width = 20,
+                            font = ("Arial", 14),
+                            borderwidth = 2,
+                            relief = "groove",
+                            justify = "center",
+                            )
+user_input.grid(row = 2, column = 0, pady = 10)
+
+tkinter.Button(text="Get Weather", width=15,height=2, padx=10, pady=5, ).grid(row=3, column=0, pady = 10)
+
+window.grid_columnconfigure(0, weight=1)
 
 # user_input = input("Enter a city name: ")
 
