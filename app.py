@@ -1,5 +1,6 @@
 import requests
 import tkinter
+import threading
 from tkinter import PhotoImage
 from tkinter import ttk
 from dotenv import load_dotenv
@@ -16,13 +17,13 @@ window.iconphoto(False, icon)
 
 
 window.config(bg = '#e6e6e4')
-frame = tkinter.Frame(window, bg = '#e6e6e4')
+# frame = tkinter.Frame(window, bg = '#e6e6e4')
 
 
 def center_window(window):
     window.update_idletasks()
-    window.resizable(True, True)
-    width = 500
+    window.resizable(False, False)
+    width = 260
     height = 300
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -33,17 +34,29 @@ center_window(window)
 
 def get_weather():
     user_input_handling = user_input.get()
-    weather_data = requests.get(
+
+    if not user_input_handling:
+        city_name_label.config(text="Please enter a city name.", fg = "red")
+        return
+  
+    response = requests.get(
         f"https://api.weatherapi.com/v1/current.json?key={api_key}&q={user_input_handling}&aqi=no"
         )
 
-    if weather_data.status_code == 200:
+    if response.status_code == 200:
         weather_window = tkinter.Toplevel(window)
         weather_window.title("Weather Details")
-        weather_window.config(bg = '#e6e6e4')
-        weather_window.geometry("1150x500") # widthxheight
+        # weather_window.config(bg = '#e6e6e4')
+        # weather_window.geometry("1150x500") # widthxheight
         weather_window.resizable(True, True)
-        weather_data = weather_data.json()
+
+        weather_data = response.json()
+
+        if weather_data['current']['is_day'] == 1:
+            weather_window.config(bg = "#5c97c2")
+        else:
+            weather_window.config(bg = "#143b62")
+
         image_label = ttk.Label(weather_window, image=image)
         image_label.grid(row = 0, column = 1, pady = (20, 20))
         
@@ -68,10 +81,8 @@ def get_weather():
                   font = ("Arial", 16),
                   background = '#e6e6e4').grid(row = 3, column = 2, pady = 10)
         tkinter.Button(weather_window, text="Close", width=15, height=2, command=weather_window.destroy).grid(row = 4, column = 1, pady = 20)
-    else:
-        city_name_label.config(text="City not found. Please try again.", fg = "red")
 
-city_name_label = tkinter.Label(frame, text="Enter a city name:",
+city_name_label = tkinter.Label(window, text="Enter a city name:",
                     bg = "#49CF7A",
                     fg = 'white',
                     font = ("Arial", 20, "bold"),
@@ -82,27 +93,32 @@ city_name_label = tkinter.Label(frame, text="Enter a city name:",
                        )
 
 
-user_input = tkinter.Entry(frame, width = 20,
+user_input = tkinter.Entry(window, width = 20,
                             font = ("Arial", 14),
                             borderwidth = 2,
                             relief = "groove",
                             justify = "center",
                             )
 
-weather_button = tkinter.Button(frame, text="Get Weather", 
+weather_button = tkinter.Button(window, text="Get Weather", 
                                 width=15,
                                 height=2, 
                                 padx=10, 
                                 pady=5,
-                                command=get_weather 
+                                command=lambda: threading.Thread(target=get_weather).start() 
                                 )
+
+author_label = tkinter.Label(window, text="2026 © Created by marlonhtml")
 
 
 user_input.grid(row = 2, column = 0, pady = 10)
 city_name_label.grid(row = 0, column = 0, pady = (20, 10))
 weather_button.grid(row=3, column=0, pady = 10)
-frame.pack()
+author_label.grid(row = 4, column = 0, pady = (10, 20))
 
+## Configure grid to center the content
 window.grid_columnconfigure(0, weight=1)
+
+
 
 window.mainloop()
