@@ -11,6 +11,7 @@ api_key = os.getenv("api_key")
 window = tkinter.Tk()
 window.title("Weather App")
 icon = tkinter.PhotoImage(file="earth.png")
+image = tkinter.PhotoImage(file="image1.png")
 window.iconphoto(False, icon)
 
 
@@ -40,31 +41,35 @@ def get_weather():
         weather_window = tkinter.Toplevel(window)
         weather_window.title("Weather Details")
         weather_window.config(bg = '#e6e6e4')
-        weather_window.geometry("400x300")
+        weather_window.geometry("1150x500") # widthxheight
         weather_window.resizable(True, True)
         weather_data = weather_data.json()
+        image_label = ttk.Label(weather_window, image=image)
+        image_label.grid(row = 0, column = 1, pady = (20, 20))
+        
         ttk.Label(weather_window,
                    text = f"Weather in {user_input_handling}",
                      font = ("Arial", 20, "bold"),
-                       background = '#e6e6e4').grid(row = 0, column = 1, pady = (20, 20))
+                       background = '#e6e6e4').grid(row = 1, column = 1, pady = 10)
         ttk.Label(weather_window,
                    text = f"Temperature: {weather_data['current']['temp_c']}°C",
                      font = ("Arial", 16),
-                       background = '#e6e6e4').grid(row = 1, column = 0, pady = 10)
+                       background = '#e6e6e4').grid(row = 2, column = 0, pady = 10, padx=20)
         ttk.Label(weather_window,
                    text = f"Condition: {weather_data['current']['condition']['text']}",
                      font = ("Arial", 16),
-                       background = '#e6e6e4').grid(row = 2, column = 0, pady = 10)
+                       background = '#e6e6e4').grid(row = 3, column = 0, pady = 10)
         ttk.Label(weather_window,
                   text = f"Wind Speed: {weather_data['current']['wind_kph']} km/h",
                   font = ("Arial", 16),
-                  background = '#e6e6e4').grid(row = 1, column = 2, pady = 10)
+                  background = '#e6e6e4').grid(row = 2, column = 2, pady = 10)
         ttk.Label(weather_window,
                   text = f"Feels Like: {weather_data['current']['feelslike_c']}°C",
                   font = ("Arial", 16),
-                  background = '#e6e6e4').grid(row = 2, column = 2, pady = 10)
-    if weather_data.status_code >= 200 and weather_data.status_code < 300:
-        city_name_label.config(text="Error fetching weather data. Please try again.")
+                  background = '#e6e6e4').grid(row = 3, column = 2, pady = 10)
+        tkinter.Button(weather_window, text="Close", width=15, height=2, command=weather_window.destroy).grid(row = 4, column = 1, pady = 20)
+    else:
+        city_name_label.config(text="City not found. Please try again.", fg = "red")
 
 city_name_label = tkinter.Label(frame, text="Enter a city name:",
                     bg = "#49CF7A",
